@@ -1,3 +1,5 @@
 This is a line of text.
 Here is a new line.
 This is my third line of text.
+Python is very cool.
+I'm practicing creating data, saving, staging, and committing data.
