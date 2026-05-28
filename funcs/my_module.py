@@ -8,5 +8,3 @@ def cube_number(input_number: int) -> int:
 
 def greet_person(name: str) -> str:
     return f'Hello, {name}.'
-
-print(greet_person('Kenny'))
