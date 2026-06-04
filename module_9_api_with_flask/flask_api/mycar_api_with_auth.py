@@ -1,5 +1,6 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Response
 from classes.mycar import Car
+from functools import wraps
 
 app = Flask(__name__)
 
@@ -22,6 +23,38 @@ def handle_car_request():
         return jsonify({'car': car.__dict__}), 201
     except Exception as e:
         return jsonify({'Error': str(e)}), 500
+    
+###
+# AUTHENTICATION LOGIC
+###
+
+VALID_USERNAME = 'admin'
+VALID_PASSWORD = 'secret'
+
+def check_auth(username, password):
+    return username == VALID_USERNAME and password == VALID_PASSWORD
+
+def authanticate():
+    return Response('Could not validate your credentials', 401,{"WWW-Authenticate": 'Basic realm="Login Required"'})
+
+def requires_auth(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        auth = request.authorization
+        if not auth or not check_auth(auth.username, auth.password):
+            return authanticate()
+        return f(*args, **kwargs)
+    return decorated
+
+@app.route('/protected')
+@requires_auth
+def protected():
+    return jsonify({'message': 'You are authenticated.'})
+
+###
+# STOP AUTH LOGIC
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
